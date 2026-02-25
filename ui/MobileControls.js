@@ -24,14 +24,20 @@ export class MobileControls {
         this.bindButton('btn-rotate-cw', 'ROTATE_CW');
         this.bindButton('btn-hold', 'HOLD');
         
-        // Pause by tapping high on the screen
+        let lastTapTime = 0;
         document.getElementById('board-container').addEventListener('touchstart', (e) => {
-             // If touching upper 15% of the screen, pause
-             if (e.touches[0].clientY < window.innerHeight * 0.15) {
+            const currentTime = performance.now();
+            const tapLength = currentTime - lastTapTime;
+            
+            // If the user taps again within 400ms, it's a double tap
+            if (tapLength < 400 && tapLength > 0) {
                 e.preventDefault();
                 this.inputManager.triggerAction('PAUSE', true);
                 setTimeout(() => this.inputManager.triggerAction('PAUSE', false), 50);
-             }
+                lastTapTime = 0; // Reset to avoid triple-tap triggering repeatedly
+            } else {
+                lastTapTime = currentTime;
+            }
         }, { passive: false });
     }
 

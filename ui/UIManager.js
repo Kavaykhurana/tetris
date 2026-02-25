@@ -28,19 +28,23 @@ export class UIManager {
     }
 
     bindEvents() {
-        document.getElementById('start-btn').addEventListener('click', () => {
+        document.getElementById('start-btn').addEventListener('click', (e) => {
+            e.target.blur();
             this.game.startNewGame();
         });
 
-        document.getElementById('resume-btn').addEventListener('click', () => {
+        document.getElementById('resume-btn').addEventListener('click', (e) => {
+            e.target.blur();
             this.game.resumeGame();
         });
 
-        document.getElementById('quit-btn').addEventListener('click', () => {
+        document.getElementById('quit-btn').addEventListener('click', (e) => {
+            e.target.blur();
             this.game.quitGame();
         });
 
-        document.getElementById('restart-btn').addEventListener('click', () => {
+        document.getElementById('restart-btn').addEventListener('click', (e) => {
+            e.target.blur();
             this.game.startNewGame();
         });
 
