@@ -1,0 +1,279 @@
+:root {
+  --bg-color: #0b0c10;
+  --panel-bg: rgba(31, 40, 51, 0.7);
+  --panel-border: rgba(69, 162, 158, 0.4);
+  --text-color: #c5c6c7;
+  --accent-color: #66fcf1;
+  --accent-hover: #45a29e;
+
+  --tetris-cyan: #00ffff;
+  --tetris-blue: #0000ff;
+  --tetris-orange: #ffa500;
+  --tetris-yellow: #ffff00;
+  --tetris-green: #00ff00;
+  --tetris-purple: #800080;
+  --tetris-red: #ff0000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(circle at center, #1f2833 0%, #0b0c10 100%);
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  color: var(--text-color);
+  overflow: hidden; /* Prevent scrolling entirely */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  max-width: 100%;
+  max-height: 100%;
+  padding: 20px;
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  color: var(--accent-color);
+  text-align: center;
+}
+
+.stats {
+  gap: 15px;
+  width: 100%;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  min-width: 120px;
+}
+
+.stat-box span:first-child {
+  font-size: 0.8rem;
+  color: var(--text-color);
+}
+
+.stat-box span:last-child {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+#board-container {
+  position: relative;
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  background-color: #000;
+  box-shadow: 0 0 20px rgba(69, 162, 158, 0.2);
+  /* Logical size for scale, will be controlled via JS/CSS scaling if needed */
+}
+
+/* Make sure the canvas rendering respects internal pixel density (handled in JS), but visually scales nicely */
+canvas {
+  display: block;
+  image-rendering: pixelated; /* fallback for some browsers */
+}
+
+/* Overlays */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 12, 16, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass unless a screen is active */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.overlay:has(.active) {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.screen.active {
+  display: flex;
+}
+
+h1 {
+  font-size: 3rem;
+  color: var(--accent-color);
+  text-shadow:
+    0 0 10px var(--accent-color),
+    0 0 20px var(--accent-color);
+  letter-spacing: 5px;
+  margin-bottom: 2dvh;
+}
+
+button {
+  background: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 80%;
+  max-width: 250px;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+button:hover {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Mobile Controls Fallback */
+#mobile-controls {
+  display: none; /* Enabled via JS on touch devices */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 35vh; /* Take up bottom 35% of screen */
+  grid-template-areas:
+    ". rotcw rotccw ."
+    "left down up right"
+    "hold drop drop hold";
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+#mobile-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 10px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+  width: 100%;
+  height: 100%;
+}
+
+#mobile-controls button:active {
+  background: rgba(69, 162, 158, 0.5); /* Primary Accent color */
+}
+
+#btn-left { grid-area: left; }
+#btn-right { grid-area: right; }
+#btn-soft-drop { grid-area: down; }
+#btn-hard-drop { grid-area: drop; }
+#btn-rotate-ccw { grid-area: rotccw; }
+#btn-rotate-cw { grid-area: rotcw; }
+#btn-hold { grid-area: hold; }
+
+/* Responsive Settings overlay scaling */
+@media (max-width: 768px), (max-height: 800px) {
+  #game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    height: 65vh; /* Keep strictly away from controls */
+  }
+
+  .glass-panel {
+    flex-direction: row;
+    width: 100%;
+    max-width: 300px;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  /* Shrink Panels */
+  #left-panel, #right-panel {
+      transform: scale(0.8);
+      margin: -10px;
+  }
+
+  #main-game {
+      width: auto !important;
+  }
+}

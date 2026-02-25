@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Tetris</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="game-container">
+      <!-- Left Panel: Hold & Stats -->
+      <aside id="left-panel" class="glass-panel">
+        <div class="panel-section">
+          <h2>HOLD</h2>
+          <canvas id="hold-canvas" width="100" height="100"></canvas>
+        </div>
+        <div class="panel-section stats">
+          <div class="stat-box">
+            <span>SCORE</span>
+            <span id="score-display">0</span>
+          </div>
+          <div class="stat-box">
+            <span>LEVEL</span>
+            <span id="level-display">1</span>
+          </div>
+          <div class="stat-box">
+            <span>LINES</span>
+            <span id="lines-display">0</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Game Area -->
+      <main id="board-container">
+        <canvas id="game-canvas" width="300" height="600"></canvas>
+
+        <!-- UI Overlay for Menus -->
+        <div id="ui-overlay" class="overlay">
+          <div id="menu-screen" class="screen active">
+            <h1>TETRIS</h1>
+            <button id="start-btn">PLAY</button>
+            <button id="settings-btn">SETTINGS</button>
+            <div id="mobile-start-hint" class="hint">
+              Tap below to interact and enable audio
+            </div>
+          </div>
+
+          <div id="pause-screen" class="screen">
+            <h2>PAUSED</h2>
+            <button id="resume-btn">RESUME</button>
+            <button id="quit-btn">QUIT</button>
+          </div>
+
+          <div id="game-over-screen" class="screen">
+            <h2>GAME OVER</h2>
+            <div class="final-score">
+              Score: <span id="final-score-display">0</span>
+            </div>
+            <button id="restart-btn">PLAY AGAIN</button>
+          </div>
+
+          <div id="settings-screen" class="screen">
+            <h2>SETTINGS</h2>
+            <div class="setting-row">
+              <label>Master Volume:</label>
+              <input
+                type="range"
+                id="volume-slider"
+                min="0"
+                max="1"
+                step="0.1"
+                value="0.5"
+              />
+            </div>
+            <div class="setting-row">
+              <label>Mute:</label>
+              <input type="checkbox" id="mute-toggle" />
+            </div>
+            <button id="close-settings-btn">BACK</button>
+          </div>
+        </div>
+
+        <!-- Floating Messages (Combos, T-Spins, etc) -->
+        <div id="message-container"></div>
+      </main>
+
+      <!-- Right Panel: Queue -->
+      <aside id="right-panel" class="glass-panel">
+        <div class="panel-section">
+          <h2>NEXT</h2>
+          <canvas id="next-canvas" width="100" height="300"></canvas>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Mobile Touch Controls Fallback Overlay (Hidden on Desktop) -->
+    <div id="mobile-controls" class="hidden">
+      <button id="btn-left">◀</button>
+      <button id="btn-right">▶</button>
+      <button id="btn-soft-drop">▼</button>
+      <button id="btn-hard-drop">⏬</button>
+      <button id="btn-rotate-ccw">↺</button>
+      <button id="btn-rotate-cw">↻</button>
+      <button id="btn-hold">HOLD</button>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
