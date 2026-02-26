@@ -26,8 +26,10 @@ export class InputManager {
         this.touchStartY = 0;
         this.touchCurrentX = 0;
         this.touchCurrentY = 0;
-        this.swipeThreshold = 30; // Min px to count as swipe
+        this.swipeThreshold = 25; // Min px to count as swipe/drag step
         this.isSwiping = false;
+        
+        this.lastSpaceTime = 0;
 
         this.bindDefaults();
         this.attachEventListeners();
@@ -40,7 +42,7 @@ export class InputManager {
         this.keys.set('ArrowDown', InputActions.SOFT_DROP);
         this.keys.set('ArrowUp', InputActions.ROTATE_CW); 
         this.keys.set('Shift', InputActions.HARD_DROP);
-        this.keys.set(' ', InputActions.PAUSE); 
+        // Space is handled manually for double-tap logic in handleKeyDown
         
         this.keys.set('x', InputActions.ROTATE_CW);
         this.keys.set('z', InputActions.ROTATE_CCW);
@@ -95,17 +97,34 @@ export class InputManager {
     }
 
     handleKeyDown(e) {
+        if (e.key === ' ') {
+            const now = performance.now();
+            if (now - this.lastSpaceTime < 400) {
+                this.triggerAction(InputActions.PAUSE, true);
+                this.lastSpaceTime = 0; // Reset
+            } else {
+                this.lastSpaceTime = now;
+            }
+            e.preventDefault();
+            return;
+        }
+
         if (this.keys.has(e.key) || this.keys.has(e.key.toLowerCase())) {
             const action = this.keys.get(e.key) || this.keys.get(e.key.toLowerCase());
             this.triggerAction(action, true);
             // Prevent scrolling
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 e.preventDefault();
             }
         }
     }
 
     handleKeyUp(e) {
+        if (e.key === ' ') {
+            this.triggerAction(InputActions.PAUSE, false);
+            return;
+        }
+
         if (this.keys.has(e.key) || this.keys.has(e.key.toLowerCase())) {
             const action = this.keys.get(e.key) || this.keys.get(e.key.toLowerCase());
             this.triggerAction(action, false);
@@ -168,40 +187,38 @@ export class InputManager {
             this.isSwiping = true;
         }
 
-        // We can do direct left/right dragging here for precise movement
-        // Or discrete "swipes". Standard mobile Tetris often uses swipes for Hard/Soft drop, 
-        // and taps/dragging for movement. We will implement discrete gestures for now.
+        // Direct left/right dragging for precise movement
+        if (Math.abs(dx) > this.swipeThreshold) {
+            if (dx > 0) {
+                this.actionState.set(InputActions.RIGHT, true);
+                setTimeout(() => this.actionState.set(InputActions.RIGHT, false), 50);
+            } else {
+                this.actionState.set(InputActions.LEFT, true);
+                setTimeout(() => this.actionState.set(InputActions.LEFT, false), 50);
+            }
+            // Reset start X to allow smooth continuous dragging
+            this.touchStartX = this.touchCurrentX;
+            this.touchStartY = this.touchCurrentY; // Reset Y to prevent diagonal false drops
+        } else if (dy > this.swipeThreshold) {
+            // Drag down for soft drop
+            this.actionState.set(InputActions.SOFT_DROP, true);
+            setTimeout(() => this.actionState.set(InputActions.SOFT_DROP, false), 50);
+            this.touchStartY = this.touchCurrentY;
+            this.touchStartX = this.touchCurrentX;
+        }
     }
 
     handleTouchEnd(e) {
-        // Simple Swipe Evaluation
         if (this.isSwiping) {
-            const dx = this.touchCurrentX - this.touchStartX;
             const dy = this.touchCurrentY - this.touchStartY;
             
-            if (Math.abs(dx) > Math.abs(dy)) {
-                // Horizontal Swipe
-                if (dx > this.swipeThreshold) {
-                    this.actionState.set(InputActions.RIGHT, true);
-                    setTimeout(() => this.actionState.set(InputActions.RIGHT, false), 50);
-                } else if (dx < -this.swipeThreshold) {
-                    this.actionState.set(InputActions.LEFT, true);
-                    setTimeout(() => this.actionState.set(InputActions.LEFT, false), 50);
-                }
-            } else {
-                // Vertical Swipe
-                if (dy > this.swipeThreshold) {
-                    // Swipe Down = Soft Drop
-                    this.actionState.set(InputActions.SOFT_DROP, true);
-                    setTimeout(() => this.actionState.set(InputActions.SOFT_DROP, false), 50);
-                } else if (dy < -this.swipeThreshold) {
-                    // Swipe Up = Hard Drop
-                    this.actionState.set(InputActions.HARD_DROP, true);
-                    setTimeout(() => this.actionState.set(InputActions.HARD_DROP, false), 50);
-                }
+            // Swipe Up = Hard Drop
+            if (dy < -this.swipeThreshold) {
+                this.actionState.set(InputActions.HARD_DROP, true);
+                setTimeout(() => this.actionState.set(InputActions.HARD_DROP, false), 50);
             }
         } else {
-            // It was a tap. Let's make tap rotate CW
+            // It was a tap. Rotate CW
             this.actionState.set(InputActions.ROTATE_CW, true);
             setTimeout(() => this.actionState.set(InputActions.ROTATE_CW, false), 50);
         }

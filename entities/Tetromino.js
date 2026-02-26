@@ -1,6 +1,7 @@
 // Types of Tetrominoes
 export const TETROMINO_TYPES = {
-    I: 'I', J: 'J', L: 'L', O: 'O', S: 'S', T: 'T', Z: 'Z'
+    I: 'I', J: 'J', L: 'L', O: 'O', S: 'S', T: 'T', Z: 'Z',
+    DOT: 'DOT', SQUARE3: 'SQUARE3', PLUS: 'PLUS', U: 'U'
 };
 
 // Colors mapping strictly to guideline (Neon variants)
@@ -11,7 +12,11 @@ export const TETROMINO_COLORS = {
     [TETROMINO_TYPES.O]: '#ffff00',
     [TETROMINO_TYPES.S]: '#00ff00',
     [TETROMINO_TYPES.T]: '#800080',
-    [TETROMINO_TYPES.Z]: '#ff0000'
+    [TETROMINO_TYPES.Z]: '#ff0000',
+    [TETROMINO_TYPES.DOT]: '#ffffff',
+    [TETROMINO_TYPES.SQUARE3]: '#ff00ff',
+    [TETROMINO_TYPES.PLUS]: '#00ffaa',
+    [TETROMINO_TYPES.U]: '#aaaaaa'
 };
 
 // Matrices list [Spawn(0), Right(1), Double(2), Left(3)]
@@ -59,6 +64,30 @@ export const SHAPES = {
         [[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]],
         [[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]],
         [[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]
+    ],
+    [TETROMINO_TYPES.DOT]: [
+        [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 1, 0], [0, 0, 0]]
+    ],
+    [TETROMINO_TYPES.SQUARE3]: [
+        [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+        [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+        [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+        [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+    ],
+    [TETROMINO_TYPES.PLUS]: [
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]]
+    ],
+    [TETROMINO_TYPES.U]: [
+        [[1, 0, 1], [1, 0, 1], [1, 1, 1]],
+        [[1, 1, 1], [1, 0, 0], [1, 1, 1]],
+        [[1, 1, 1], [1, 0, 1], [1, 0, 1]],
+        [[1, 1, 1], [0, 0, 1], [1, 1, 1]]
     ]
 };
 
