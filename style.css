@@ -223,11 +223,9 @@ button:hover {
 }
 
 #mobile-controls button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  border-radius: 10px;
-  font-size: 24px;
+  background: transparent;
+  border: none;
+  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,7 +236,7 @@ button:hover {
 }
 
 #mobile-controls button:active {
-  background: rgba(69, 162, 158, 0.5); /* Primary Accent color */
+  background: transparent;
 }
 
 #btn-left { grid-area: left; }
