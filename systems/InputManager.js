@@ -30,6 +30,7 @@ export class InputManager {
         this.isSwiping = false;
         
         this.lastSpaceTime = 0;
+        this.lastTouchTapTime = 0;
 
         this.bindDefaults();
         this.attachEventListeners();
@@ -99,8 +100,9 @@ export class InputManager {
     handleKeyDown(e) {
         if (e.key === ' ') {
             const now = performance.now();
-            if (now - this.lastSpaceTime < 400) {
+            if (this.lastSpaceTime > 0 && now - this.lastSpaceTime < 400) {
                 this.triggerAction(InputActions.PAUSE, true);
+                setTimeout(() => this.triggerAction(InputActions.PAUSE, false), 50); // Keep alive long enough for game loop to catch it
                 this.lastSpaceTime = 0; // Reset
             } else {
                 this.lastSpaceTime = now;
@@ -121,7 +123,7 @@ export class InputManager {
 
     handleKeyUp(e) {
         if (e.key === ' ') {
-            this.triggerAction(InputActions.PAUSE, false);
+            // Spacebar logic is pulsed via timeout, ignore keyup to prevent dropping short double taps
             return;
         }
 
@@ -218,9 +220,18 @@ export class InputManager {
                 setTimeout(() => this.actionState.set(InputActions.HARD_DROP, false), 50);
             }
         } else {
-            // It was a tap. Rotate CW
-            this.actionState.set(InputActions.ROTATE_CW, true);
-            setTimeout(() => this.actionState.set(InputActions.ROTATE_CW, false), 50);
+            // Check for double tap to block rotation and send PAUSE
+            const now = performance.now();
+            if (this.lastTouchTapTime > 0 && now - this.lastTouchTapTime < 400) {
+                this.actionState.set(InputActions.PAUSE, true);
+                setTimeout(() => this.actionState.set(InputActions.PAUSE, false), 50);
+                this.lastTouchTapTime = 0; // Reset
+            } else {
+                this.lastTouchTapTime = now;
+                // It was a tap. Rotate CW
+                this.actionState.set(InputActions.ROTATE_CW, true);
+                setTimeout(() => this.actionState.set(InputActions.ROTATE_CW, false), 50);
+            }
         }
     }
 }
